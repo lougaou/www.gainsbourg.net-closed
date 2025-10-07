@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  www:
+    container_name: www
+    image: nginx
+    restart: always
+    networks:
+      - traefik_network
+    volumes:
+      - ./www/:/usr/share/nginx/html
+    labels:
+      - traefik.enable=true
+      - traefik.port=80
+      - traefik.http.routers.www.rule=Host(`www.gainsbourg.net`)
+      - traefik.http.routers.www.entrypoints=websecure
+      - traefik.http.routers.www.tls=true
+      - traefik.http.routers.www.tls.certresolver=myresolver
+
+networks:
+  traefik_network:
+    external: true
