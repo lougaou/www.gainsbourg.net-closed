@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   www:
     container_name: www
@@ -20,3 +18,4 @@ services:
 networks:
   traefik_network:
     external: true
+
