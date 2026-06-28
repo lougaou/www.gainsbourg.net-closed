@@ -1,21 +1,27 @@
 services:
-  www:
-    container_name: www
-    image: nginx
-    restart: always
+  www-closed:
+    container_name: www-closed
+    image: nginx:1.30.3
+    restart: unless-stopped
     networks:
       - traefik_network
     volumes:
-      - ./www/:/usr/share/nginx/html
+      - ./www/:/usr/share/nginx/html:ro
     labels:
       - traefik.enable=true
-      - traefik.port=80
-      - traefik.http.routers.www.rule=Host(`www.gainsbourg.net`)
-      - traefik.http.routers.www.entrypoints=websecure
-      - traefik.http.routers.www.tls=true
-      - traefik.http.routers.www.tls.certresolver=myresolver
+      - traefik.docker.network=traefik_network
+      - traefik.http.routers.www-closed.rule=Host(`www.gainsbourg.net`)
+      - traefik.http.routers.www-closed.entrypoints=websecure
+      - traefik.http.routers.www-closed.tls=true
+      - traefik.http.routers.www-closed.tls.certresolver=myresolver
+      - traefik.http.services.www-closed.loadbalancer.server.port=80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 networks:
   traefik_network:
     external: true
-
